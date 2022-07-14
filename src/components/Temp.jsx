@@ -1,33 +1,50 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-// import {sunset} from '../assets/sunset.jpg'
 import './Temp.css';
+import  {Error}  from './Error';
+
 
 export const Temp=()=> {
   const [data, setData] = useState({})
   const [location, setLocation] = useState('')
+  const [find ,setFind ] = useState(false)
 
-  const url = `https://api.openweathermap.org/data/2.5/weather?q=${location}&units=imperial&appid=895284fb2d2c50a520ea537456963d9c`
+  const url = `https://api.openweathermap.org/data/2.5/weather?q=${location}&units=imperial&appid=895284fb2d2c50a520ea537456963d9c` 
 
   const searchLocation = (event) => {
     if (event.key === 'Enter') {
       axios.get(url).then((response) => {
         setData(response.data)
         console.log(response.data)
+  
+    
+
+localStorage.setItem("location",JSON.stringify(data));
+
+   
+   
+      }).catch((er)=>{
+        setFind(true)
       })
       setLocation('')
     }
   }
 
-  return (
-    <div className="app">
+
+  return (<>
+{find == true?(
+   <Error/>
+)
+
+ :    <div className="app">
       <div className="search">
         <input
           value={location}
-          onChange={event => setLocation(event.target.value)}
+          onChange={event => setLocation(event.target.value) }
           onKeyPress={searchLocation}
           placeholder='Enter Location'
-          type="text" />
+          type="text"
+           />
       </div>
       <div className="container">
         <div className="top">
@@ -41,10 +58,10 @@ export const Temp=()=> {
             {data.weather ? <p>{data.weather[0].main}</p> : null}
           </div>
           <div className='Day'>
+          {data.weather ? <img src={`http://openweathermap.org/img/wn/${ data.weather[0].icon}@2x.png`} /> : null}
                 
+           </div>
         </div>
-        </div>
-
         {data.name !== undefined &&
           <div className="bottom">
             <div className="feels">
@@ -67,6 +84,9 @@ export const Temp=()=> {
 
       </div>
     </div>
+ } 
+
+    </>
   );
 }
 
